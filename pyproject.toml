@@ -1,0 +1,153 @@
+[build-system]
+requires = ["hatchling>=1.25.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "multimedia-scraper"
+version = "0.1.0"
+description = "Modular multimedia aggregation and streaming platform"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [
+    { name = "Ankit Saini" }
+]
+keywords = [
+    "multimedia",
+    "streaming",
+    "plugins",
+    "async",
+    "scraper",
+]
+
+dependencies = [
+    "pydantic>=2.7.0",
+    "pydantic-settings>=2.2.1",
+    "structlog>=24.1.0",
+    "typing-extensions>=4.11.0; python_version < '3.11'",
+]
+
+[project.optional-dependencies]
+# Install with: uv sync --extra dev
+dev = [
+    "ruff>=0.6.0",
+    "mypy>=1.10.0",
+    "pytest>=8.2.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=5.0.0",
+    "pre-commit>=3.7.0",
+    "deptry>=0.16.0",
+    "import-linter>=2.0",
+    "vulture>=2.10",
+    "pytest-xdist>=3.5.0",
+    "poethepoet>=0.46.0",
+]
+
+[project.urls]
+Repository = "https://github.com/ankitsaini3/multimedia-scraper"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/multimedia_scraper"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+asyncio_mode = "auto"
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--disable-warnings",
+    "--cov=multimedia_scraper",
+    "--cov-report=term-missing",
+]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["multimedia_scraper"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+precision = 2
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "C90"]
+ignore = ["E501"]  # Handled by formatter
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+plugins = ["pydantic.mypy"]
+mypy_path = "src"
+explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+
+[tool.deptry]
+ignore_missing = ["importlib_metadata"]
+pep621_dev_dependency_groups = ["dev"]
+
+[tool.importlinter]
+root_package = "multimedia_scraper"
+
+# ─────────────────────────────────────────────────────────────
+# Scripts
+# ─────────────────────────────────────────────────────────────
+[tool.poe.tasks]
+fmt     = "ruff format ."
+fmt-chk = "ruff format --check ."
+lint    = "ruff check . --fix"
+lint-chk = "ruff check ."
+type    = "mypy src/multimedia_scraper"
+test    = "pytest -n auto --dist loadfile"
+cov     = "pytest --cov=multimedia_scraper --cov-report=term-missing"
+check   = ["fmt-chk", "lint-chk", "type", "test"]
+ci      = ["clean", "fmt", "lint", "type", "cov"]
+clean.script = "_tasks:clean"
+
+
+
+# ─────────────────────────────────────────────────────────────
+# Architecture Contracts
+# ─────────────────────────────────────────────────────────────
+[[tool.importlinter.contracts]]
+name = "Core cannot import infrastructure"
+type = "forbidden"
+source_modules = ["multimedia_scraper.core"]
+forbidden_modules = ["multimedia_scraper.infrastructure"]
+ignore_imports = [
+    # Add acceptable exceptions here, e.g.:
+    # "multimedia_scraper.core.utils -> multimedia_scraper.infrastructure.logging",
+]
+
+[[tool.importlinter.contracts]]
+name = "Plugins cannot import app layer"
+type = "forbidden"
+source_modules = ["multimedia_scraper.plugins"]
+forbidden_modules = ["multimedia_scraper.app"]
+
+[[tool.importlinter.contracts]]
+name = "Core isolated from plugins"
+type = "forbidden"
+source_modules = ["multimedia_scraper.core"]
+forbidden_modules = ["multimedia_scraper.plugins"]
+
+[[tool.importlinter.contracts]]
+name = "Infrastructure cannot import plugins"
+type = "forbidden"
+source_modules = ["multimedia_scraper.infrastructure"]
+forbidden_modules = ["multimedia_scraper.plugins"]
+
+[[tool.importlinter.contracts]]
+name = "Source code cannot import tests"
+type = "forbidden"
+source_modules = ["multimedia_scraper"]
+forbidden_modules = ["tests"]
+match_submodules = true

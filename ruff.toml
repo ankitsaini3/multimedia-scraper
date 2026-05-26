@@ -1,0 +1,36 @@
+line-length = 88
+target-version = "py310"
+
+# Only list directories containing first-party code for import resolution
+src = ["src"]
+
+[lint]
+select = [
+    "E",     # pycodestyle errors
+    "F",     # Pyflakes
+    "W",     # pycodestyle warnings
+    "I",     # isort
+    "UP",    # pyupgrade
+    "B",     # flake8-bugbear
+    "C4",    # flake8-comprehensions
+    "SIM",   # flake8-simplify
+    "ASYNC", # flake8-async
+    "T20",   # flake8-print
+    "RET",   # flake8-return
+    "RUF",   # Ruff-specific rules
+]
+ignore = ["E501"]  # Handled by formatter
+
+[lint.isort]
+known-first-party = ["multimedia_scraper"]
+combine-as-imports = true
+
+[lint.per-file-ignores]
+# S101 (assert) is only active if 'S' (flake8-bandit) is in `select` above.
+# Uncomment if you add "S" to select and want to allow asserts in tests:
+"tests/**/*.py" = ["S101"]
+"_tasks.py" = ["T201", "T203"]
+
+[format]
+quote-style = "double"
+line-ending = "lf"
