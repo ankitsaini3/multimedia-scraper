@@ -1,0 +1,13 @@
+from enum import Enum
+
+
+class ConfigBootstrapState(str, Enum):
+    PRE_BOOTSTRAP = "PRE_BOOTSTRAP"
+    RESOLVING = "RESOLVING"
+    VALIDATING = "VALIDATING"
+    FREEZING = "FREEZING"
+    ACTIVATING = "ACTIVATING"
+    ACTIVE = "ACTIVE"
+    FAILED = "FAILED"
+    ROLLING_BACK = "ROLLING_BACK"
+    TERMINATED = "TERMINATED"
