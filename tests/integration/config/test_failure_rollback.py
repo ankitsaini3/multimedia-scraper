@@ -12,13 +12,11 @@ from multimedia_scraper.core.config.exceptions import (
 
 
 class FakeResolver:
-
     def resolve(self, sources):
         return {}
 
 
 class FailingValidator:
-
     def validate(self, payload):
         raise ConfigurationValidationError(
             "validation failed",
@@ -27,12 +25,10 @@ class FailingValidator:
 
 def test_failed_bootstrap_rolls_back() -> None:
 
-    coordinator = (
-        ConfigurationBootstrapCoordinator(
-            resolver=FakeResolver(),
-            validator=FailingValidator(),
-            providers=[],
-        )
+    coordinator = ConfigurationBootstrapCoordinator(
+        resolver=FakeResolver(),
+        validator=FailingValidator(),
+        providers=[],
     )
 
     with pytest.raises(
@@ -40,6 +36,4 @@ def test_failed_bootstrap_rolls_back() -> None:
     ):
         coordinator.bootstrap()
 
-    assert coordinator.state == (
-        ConfigBootstrapState.TERMINATED
-    )
+    assert coordinator.state == (ConfigBootstrapState.TERMINATED)

@@ -5,8 +5,7 @@ from multimedia_scraper.core.runtime.di import (
 )
 
 
-def test_service_collection_disallows_mutation_after_freeze(
-) -> None:
+def test_service_collection_disallows_mutation_after_freeze() -> None:
 
     services = ServiceCollection()
 

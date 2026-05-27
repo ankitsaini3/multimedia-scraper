@@ -3,6 +3,9 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from multimedia_scraper.core.config.dto.runtime import (
+    RuntimeConfigDTO,
+)
 from multimedia_scraper.core.config.exceptions import (
     ConfigurationValidationError,
 )
@@ -10,14 +13,9 @@ from multimedia_scraper.core.config.exceptions import (
 from .cross_field import CrossFieldValidator
 from .registry import ALLOWED_FIELDS
 from .runtime import RuntimeConfigDTOFactory
-from multimedia_scraper.core.config.dto.runtime import (
-    RuntimeConfigDTO,
-)
-
 
 
 class ValidationPipeline:
-
     def validate(
         self,
         payload: Mapping[str, Any],

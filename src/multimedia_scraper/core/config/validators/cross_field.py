@@ -6,7 +6,6 @@ from .base import ValidationResult
 
 
 class CrossFieldValidator:
-
     def validate(
         self,
         payload: Mapping[str, object],

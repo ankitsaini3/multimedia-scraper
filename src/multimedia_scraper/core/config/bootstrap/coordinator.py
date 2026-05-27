@@ -5,11 +5,11 @@ from collections.abc import Sequence
 from multimedia_scraper.core.config.bootstrap.freeze import (
     FrozenRuntimeConfig,
 )
+from multimedia_scraper.core.config.bootstrap.rollback import (
+    ConfigBootstrapRollbackManager,
+)
 from multimedia_scraper.core.config.bootstrap.state import (
     ConfigBootstrapState,
-)
-from multimedia_scraper.core.config.dto.runtime import (
-    RuntimeConfigDTO,
 )
 from multimedia_scraper.core.config.sources.base import (
     ConfigSourceProvider,
@@ -21,13 +21,8 @@ from multimedia_scraper.core.config.validators.pipeline import (
     ValidationPipeline,
 )
 
-from multimedia_scraper.core.config.bootstrap.rollback import (
-    ConfigBootstrapRollbackManager,
-)
-
 
 class ConfigurationBootstrapCoordinator:
-
     def __init__(
         self,
         *,
@@ -35,24 +30,18 @@ class ConfigurationBootstrapCoordinator:
         validator: ValidationPipeline,
         providers: Sequence[ConfigSourceProvider],
     ) -> None:
-        
+
         if resolver is None:
-            raise TypeError(
-                "resolver cannot be None"
-            )
-        
+            raise TypeError("resolver cannot be None")
+
         if validator is None:
-            raise TypeError(
-                "validator cannot be None"
-            )
-        
+            raise TypeError("validator cannot be None")
+
         self._resolver = resolver
         self._validator = validator
         self._providers = tuple(providers)
 
-        self._state = (
-            ConfigBootstrapState.PRE_BOOTSTRAP
-        )
+        self._state = ConfigBootstrapState.PRE_BOOTSTRAP
 
     @property
     def state(
@@ -63,16 +52,13 @@ class ConfigurationBootstrapCoordinator:
     def bootstrap(
         self,
     ) -> FrozenRuntimeConfig:
-        
+
         try:
             self._transition(
                 ConfigBootstrapState.RESOLVING,
             )
 
-            sources = tuple(
-                provider.load()
-                for provider in self._providers
-            )
+            sources = tuple(provider.load() for provider in self._providers)
 
             merged = self._resolver.resolve(
                 sources,
@@ -103,19 +89,14 @@ class ConfigurationBootstrapCoordinator:
             )
 
             return frozen
-        except Exception as e:
-            self._state = (
-                ConfigBootstrapState.FAILED
-            )
+        except Exception:
+            self._state = ConfigBootstrapState.FAILED
 
-            rollback = (
-                    ConfigBootstrapRollbackManager()
-                )
+            rollback = ConfigBootstrapRollbackManager()
 
             rollback.rollback(self)
 
             raise
-
 
     def _transition(
         self,

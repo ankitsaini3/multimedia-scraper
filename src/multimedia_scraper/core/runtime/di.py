@@ -15,11 +15,8 @@ class ServiceRegistration:
 
 
 class ServiceCollection:
-
     def __init__(self) -> None:
-        self._registrations: list[
-            ServiceRegistration
-        ] = []
+        self._registrations: list[ServiceRegistration] = []
 
         self._frozen = False
 

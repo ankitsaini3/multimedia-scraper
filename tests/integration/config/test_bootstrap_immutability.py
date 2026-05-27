@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import pytest
 from dataclasses import FrozenInstanceError
+
+import pytest
 
 from multimedia_scraper.core.config.bootstrap.coordinator import (
     ConfigurationBootstrapCoordinator,
@@ -15,16 +16,15 @@ from multimedia_scraper.core.config.sources.resolver import (
 from multimedia_scraper.core.config.sources.types import (
     ConfigSourceType,
 )
-from multimedia_scraper.core.runtime.di import (
-    ServiceCollection,
-)
 from multimedia_scraper.core.config.validators.pipeline import (
     ValidationPipeline,
+)
+from multimedia_scraper.core.runtime.di import (
+    ServiceCollection,
 )
 
 
 class FakeSourceProvider:
-
     def load(self) -> ConfigSource:
         return ConfigSource(
             source_type=ConfigSourceType.DEFAULT,
@@ -43,17 +43,14 @@ class FakeSourceProvider:
         )
 
 
-def test_runtime_config_is_frozen_after_bootstrap(
-) -> None:
+def test_runtime_config_is_frozen_after_bootstrap() -> None:
 
-    coordinator = (
-        ConfigurationBootstrapCoordinator(
-            resolver=ConfigResolver(),
-            validator=ValidationPipeline(),
-            providers=[
-                FakeSourceProvider(),
-            ],
-        )
+    coordinator = ConfigurationBootstrapCoordinator(
+        resolver=ConfigResolver(),
+        validator=ValidationPipeline(),
+        providers=[
+            FakeSourceProvider(),
+        ],
     )
 
     frozen = coordinator.bootstrap()
@@ -64,8 +61,7 @@ def test_runtime_config_is_frozen_after_bootstrap(
         frozen.config.logging.level = "DEBUG"
 
 
-def test_service_collection_freeze_prevents_mutation(
-) -> None:
+def test_service_collection_freeze_prevents_mutation() -> None:
 
     services = ServiceCollection()
 

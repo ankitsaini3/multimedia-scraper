@@ -14,16 +14,11 @@ class BootstrapStateController(
 
 
 class ConfigBootstrapRollbackManager:
-
     def rollback(
         self,
         coordinator: BootstrapStateController,
     ) -> None:
 
-        coordinator._state = (
-            ConfigBootstrapState.ROLLING_BACK
-        )
+        coordinator._state = ConfigBootstrapState.ROLLING_BACK
 
-        coordinator._state = (
-            ConfigBootstrapState.TERMINATED
-        )
+        coordinator._state = ConfigBootstrapState.TERMINATED

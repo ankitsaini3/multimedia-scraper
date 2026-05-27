@@ -5,11 +5,9 @@ from multimedia_scraper.core.config.bootstrap.coordinator import (
 )
 
 
-def test_bootstrap_requires_explicit_dependencies(
-) -> None:
+def test_bootstrap_requires_explicit_dependencies() -> None:
 
     with pytest.raises(TypeError):
-
         ConfigurationBootstrapCoordinator(
             resolver=None,
             validator=None,

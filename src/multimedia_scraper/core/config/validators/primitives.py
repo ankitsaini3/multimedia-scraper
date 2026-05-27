@@ -6,7 +6,6 @@ from .base import ValidationResult
 
 
 class StringValidator:
-
     def validate(
         self,
         value: Any,
@@ -27,7 +26,6 @@ class StringValidator:
 
 
 class IntegerRangeValidator:
-
     def __init__(
         self,
         *,

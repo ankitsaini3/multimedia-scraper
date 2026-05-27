@@ -1,4 +1,4 @@
-from multimedia_scraper.core.exceptions import (
+from multimedia_scraper.core.errors import (
     ConfigurationError,
 )
 
@@ -20,36 +20,32 @@ class SecretResolutionError(
 ):
     """Secret resolution failed."""
 
+
 class ConfigurationSourceError(
     ConfigurationError,
-):
-    ...
+): ...
 
 
 class EnvironmentResolutionError(
     ConfigurationSourceError,
-):
-    ...
+): ...
 
 
 class ConfigurationMergeError(
     ConfigurationSourceError,
-):
-    ...
+): ...
+
 
 class SchemaValidationError(
     ConfigurationValidationError,
-):
-    ...
+): ...
 
 
 class CrossFieldValidationError(
     ConfigurationValidationError,
-):
-    ...
+): ...
 
 
 class PathValidationError(
     ConfigurationValidationError,
-):
-    ...
+): ...

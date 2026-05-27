@@ -8,23 +8,18 @@ from .base import ConfigSourceProvider
 from .models import ConfigSource
 from .types import ConfigSourceType
 
-
 ENV_MAPPINGS: dict[
     str,
     tuple[str, Callable[[str], Any]],
 ] = {
-    "MULTIMEDIA_SCRAPER_LOG_LEVEL":
-        ("logging.level", str),
-
-    "MULTIMEDIA_SCRAPER_CACHE_DIR":
-        ("cache.root_directory", str),
+    "MULTIMEDIA_SCRAPER_LOG_LEVEL": ("logging.level", str),
+    "MULTIMEDIA_SCRAPER_CACHE_DIR": ("cache.root_directory", str),
 }
 
 
 class EnvironmentConfigSourceProvider(
     ConfigSourceProvider,
 ):
-
     def load(self) -> ConfigSource:
         payload: dict[str, Any] = {}
 

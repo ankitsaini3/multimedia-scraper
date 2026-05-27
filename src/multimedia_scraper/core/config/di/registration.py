@@ -3,7 +3,6 @@ from __future__ import annotations
 from multimedia_scraper.core.config.bootstrap.freeze import (
     FrozenRuntimeConfig,
 )
-
 from multimedia_scraper.core.runtime.di import (
     ServiceCollection,
 )

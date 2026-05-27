@@ -6,8 +6,7 @@ from multimedia_scraper.core.config.validators.runtime import (
 )
 
 
-def test_validation_pipeline_returns_runtime_dto(
-) -> None:
+def test_validation_pipeline_returns_runtime_dto() -> None:
 
     payload = {
         "logging.level": "INFO",

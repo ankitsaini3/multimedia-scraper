@@ -7,7 +7,6 @@ from .models import ConfigSource
 
 
 class ConfigResolver:
-
     def resolve(
         self,
         sources: Iterable[ConfigSource],

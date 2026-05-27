@@ -6,7 +6,6 @@ from .models import ConfigSource
 
 
 class ConfigSourceProvider(ABC):
-
     @abstractmethod
     def load(self) -> ConfigSource:
         """

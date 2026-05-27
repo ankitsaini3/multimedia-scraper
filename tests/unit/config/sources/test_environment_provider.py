@@ -17,18 +17,10 @@ def test_environment_provider_reads_explicit_keys_only(
         "SHOULD_NOT_APPEAR",
     )
 
-    provider = (
-        EnvironmentConfigSourceProvider()
-    )
+    provider = EnvironmentConfigSourceProvider()
 
     source = provider.load()
 
-    assert (
-        source.payload["logging.level"]
-        == "DEBUG"
-    )
+    assert source.payload["logging.level"] == "DEBUG"
 
-    assert (
-        "UNRELATED_SECRET"
-        not in source.payload
-    )
+    assert "UNRELATED_SECRET" not in source.payload

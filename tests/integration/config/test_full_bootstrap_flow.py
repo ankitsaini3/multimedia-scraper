@@ -28,7 +28,6 @@ from multimedia_scraper.core.config.validators.pipeline import (
 
 
 class FakeSourceProvider:
-
     def load(self) -> ConfigSource:
         return ConfigSource(
             source_type=ConfigSourceType.DEFAULT,
@@ -49,36 +48,26 @@ class FakeSourceProvider:
 
 def test_full_bootstrap_flow() -> None:
 
-    coordinator = (
-        ConfigurationBootstrapCoordinator(
-            resolver=ConfigResolver(),
-            validator=ValidationPipeline(),
-            providers=[
-                FakeSourceProvider(),
-            ],
-        )
+    coordinator = ConfigurationBootstrapCoordinator(
+        resolver=ConfigResolver(),
+        validator=ValidationPipeline(),
+        providers=[
+            FakeSourceProvider(),
+        ],
     )
 
     frozen = coordinator.bootstrap()
 
-    assert coordinator.state == (
-        ConfigBootstrapState.ACTIVE
-    )
+    assert coordinator.state == (ConfigBootstrapState.ACTIVE)
 
     assert isinstance(
         frozen.config,
         RuntimeConfigDTO,
     )
 
-    assert (
-        frozen.config.logging.level
-        == "INFO"
-    )
+    assert frozen.config.logging.level == "INFO"
 
-    assert (
-        frozen.config.cache.max_size_mb
-        == 1024
-    )
+    assert frozen.config.cache.max_size_mb == 1024
 
     with pytest.raises(
         FrozenInstanceError,

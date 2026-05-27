@@ -18,7 +18,6 @@ from multimedia_scraper.core.config.dto.runtime import (
 
 
 class RuntimeConfigDTOFactory:
-
     @staticmethod
     def create(
         payload: Mapping[str, Any],
@@ -32,22 +31,12 @@ class RuntimeConfigDTOFactory:
             ),
             cache=CacheConfigDTO(
                 enabled=payload["cache.enabled"],
-                root_directory=payload[
-                    "cache.root_directory"
-                ],
-                max_size_mb=payload[
-                    "cache.max_size_mb"
-                ],
+                root_directory=payload["cache.root_directory"],
+                max_size_mb=payload["cache.max_size_mb"],
             ),
             ffmpeg=FFmpegConfigDTO(
-                executable_path=payload[
-                    "ffmpeg.executable_path"
-                ],
-                hwaccel_enabled=payload[
-                    "ffmpeg.hwaccel_enabled"
-                ],
-                max_parallel_jobs=payload[
-                    "ffmpeg.max_parallel_jobs"
-                ],
+                executable_path=payload["ffmpeg.executable_path"],
+                hwaccel_enabled=payload["ffmpeg.hwaccel_enabled"],
+                max_parallel_jobs=payload["ffmpeg.max_parallel_jobs"],
             ),
         )

@@ -8,7 +8,6 @@ from .base import ValidationResult
 
 
 class SecretValidator:
-
     def validate(
         self,
         value: object,

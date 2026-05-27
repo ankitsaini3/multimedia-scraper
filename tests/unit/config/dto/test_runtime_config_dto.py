@@ -1,5 +1,6 @@
-import pytest
 from dataclasses import FrozenInstanceError
+
+import pytest
 
 from multimedia_scraper.core.config.dto.cache import (
     CacheConfigDTO,

@@ -6,7 +6,6 @@ from .base import ValidationResult
 
 
 class SafePathValidator:
-
     def validate(
         self,
         value: str,

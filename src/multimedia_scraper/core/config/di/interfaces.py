@@ -10,7 +10,5 @@ from multimedia_scraper.core.config.dto.cache import (
 class CacheConfigProvider(
     Protocol,
 ):
-
     @property
-    def cache(self) -> CacheConfigDTO:
-        ...
+    def cache(self) -> CacheConfigDTO: ...

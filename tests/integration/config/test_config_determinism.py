@@ -18,7 +18,6 @@ from multimedia_scraper.core.config.validators.pipeline import (
 
 
 class FakeSourceProvider:
-
     def load(self) -> ConfigSource:
         return ConfigSource(
             source_type=ConfigSourceType.DEFAULT,
@@ -39,14 +38,12 @@ class FakeSourceProvider:
 
 def build_config():
 
-    coordinator = (
-        ConfigurationBootstrapCoordinator(
-            resolver=ConfigResolver(),
-            validator=ValidationPipeline(),
-            providers=[
-                FakeSourceProvider(),
-            ],
-        )
+    coordinator = ConfigurationBootstrapCoordinator(
+        resolver=ConfigResolver(),
+        validator=ValidationPipeline(),
+        providers=[
+            FakeSourceProvider(),
+        ],
     )
 
     return coordinator.bootstrap()
