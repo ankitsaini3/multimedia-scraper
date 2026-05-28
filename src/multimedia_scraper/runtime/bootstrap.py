@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from uuid import uuid4
 from datetime import datetime
+from uuid import uuid4
 
 from multimedia_scraper.core.config.bootstrap.coordinator import (
     ConfigurationBootstrapCoordinator,
@@ -33,7 +33,6 @@ from multimedia_scraper.runtime.registry import (
 from multimedia_scraper.runtime.supervisor import (
     TaskSupervisor,
 )
-
 
 
 @dataclass(slots=True, kw_only=True)
@@ -161,7 +160,6 @@ class RuntimeBootstrapCoordinator:
 
     @staticmethod
     def _utc_now() -> datetime:
-        from datetime import UTC
-        from datetime import datetime
+        from datetime import UTC, datetime
 
         return datetime.now(UTC)
