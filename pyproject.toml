@@ -113,7 +113,7 @@ type    = "mypy src/multimedia_scraper"
 test    = "pytest -n auto --dist loadfile"
 cov     = "pytest --cov=multimedia_scraper --cov-report=term-missing"
 check   = ["fmt-chk", "lint-chk", "type", "test"]
-ci      = ["clean", "fmt", "lint", "type", "cov"]
+ci = ["clean", "fmt-chk", "lint-chk", "type", "cov"]
 clean.script = "_tasks:clean"
 
 
