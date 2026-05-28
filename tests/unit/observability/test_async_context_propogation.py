@@ -58,13 +58,14 @@ async def test_child_context_preserves_trace_lineage() -> None:
         supervisor_id="root",
     )
 
-    with bind_telemetry_context(
-        root,
-    ), child_telemetry_context(
-        operation="worker",
-    ) as child:
+    with (
+        bind_telemetry_context(
+            root,
+        ),
+        child_telemetry_context(
+            operation="worker",
+        ) as child,
+    ):
         assert child.correlation.trace.trace_id == root.correlation.trace.trace_id
 
-        assert (
-            child.correlation.trace.parent_span_id == root.correlation.trace.span_id
-        )
+        assert child.correlation.trace.parent_span_id == root.correlation.trace.span_id

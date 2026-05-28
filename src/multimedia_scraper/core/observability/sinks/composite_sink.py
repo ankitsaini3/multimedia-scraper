@@ -26,9 +26,7 @@ class CompositeTelemetrySink:
     def __init__(
         self,
         *,
-        sinks: Sequence[
-            BaseTelemetrySink
-        ],
+        sinks: Sequence[BaseTelemetrySink],
     ) -> None:
         self._sinks = tuple(
             sinks,
@@ -72,10 +70,6 @@ class CompositeTelemetrySink:
             with suppress(Exception):
                 await sink.shutdown()
 
-
     @property
     def degraded(self) -> bool:
-        return any(
-            not sink.is_healthy()
-            for sink in self._sinks
-        )
+        return any(not sink.is_healthy() for sink in self._sinks)

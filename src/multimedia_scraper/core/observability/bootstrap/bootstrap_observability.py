@@ -73,10 +73,7 @@ class BootstrapObservabilityController:
     def degraded_mode(
         self,
     ) -> bool:
-        return (
-            self._degraded
-            or self._sink.degraded
-        )
+        return self._degraded or self._sink.degraded
 
     async def initialize(
         self,
@@ -117,10 +114,7 @@ class BootstrapObservabilityController:
             if self._sink.degraded:
                 self._degraded = True
 
-                self._state = (
-                    ObservabilityBootstrapState
-                    .DEGRADED
-                )
+                self._state = ObservabilityBootstrapState.DEGRADED
 
         except Exception:
             self._degraded = True

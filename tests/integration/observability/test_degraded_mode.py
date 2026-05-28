@@ -72,24 +72,20 @@ def _event() -> LogEventDTO:
         ),
     )
 
-    supervision = (
-        SupervisionLineageDTO(
-            runtime_id="runtime",
-            root_supervisor_id="root",
-            supervisor_id="root",
-            parent_supervisor_id=None,
-            supervisor_depth=0,
-        )
+    supervision = SupervisionLineageDTO(
+        runtime_id="runtime",
+        root_supervisor_id="root",
+        supervisor_id="root",
+        parent_supervisor_id=None,
+        supervisor_depth=0,
     )
 
-    correlation = (
-        CorrelationMetadataDTO(
-            correlation_id="corr",
-            causation_id=None,
-            runtime_scope_id="scope",
-            trace=trace,
-            supervision=supervision,
-        )
+    correlation = CorrelationMetadataDTO(
+        correlation_id="corr",
+        causation_id=None,
+        runtime_scope_id="scope",
+        trace=trace,
+        supervision=supervision,
     )
 
     return LogEventDTO(
@@ -98,9 +94,7 @@ def _event() -> LogEventDTO:
         ),
         monotonic_ns=1,
         severity=LogSeverity.ERROR,
-        event_category=(
-            EventCategory.TELEMETRY
-        ),
+        event_category=(EventCategory.TELEMETRY),
         subsystem="runtime",
         operation="emit",
         message="failure",
@@ -110,39 +104,27 @@ def _event() -> LogEventDTO:
 
 
 @pytest.mark.asyncio
-async def test_degraded_mode_activation(
-) -> None:
+async def test_degraded_mode_activation() -> None:
     sink = CompositeTelemetrySink(
         sinks=[
             FailingSink(),
         ],
     )
 
-    degraded = (
-        DegradedObservabilityLogger(
-            sink=ConsoleTelemetrySink(),
-        )
+    degraded = DegradedObservabilityLogger(
+        sink=ConsoleTelemetrySink(),
     )
 
-    controller = (
-        BootstrapObservabilityController(
-            early_buffer=(
-                EarlyBootstrapBuffer()
-            ),
-            sink=sink,
-            degraded_logger=degraded,
-            diagnostics=(
-                StartupDiagnosticsRegistry()
-            ),
-        )
+    controller = BootstrapObservabilityController(
+        early_buffer=(EarlyBootstrapBuffer()),
+        sink=sink,
+        degraded_logger=degraded,
+        diagnostics=(StartupDiagnosticsRegistry()),
     )
 
     await controller.initialize()
 
-    assert (
-        controller.degraded_mode
-        is False
-    )
+    assert controller.degraded_mode is False
 
     await controller.emit(
         _event(),
@@ -151,7 +133,4 @@ async def test_degraded_mode_activation(
     # allow sink worker execution
     await asyncio.sleep(0)
 
-    assert (
-        controller.degraded_mode
-        is True
-    )
+    assert controller.degraded_mode is True

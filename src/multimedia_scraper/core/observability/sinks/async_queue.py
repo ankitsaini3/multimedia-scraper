@@ -163,7 +163,6 @@ class BoundedTelemetryQueue:
             except RuntimeError:
                 return
 
-
     async def wait_until_empty(
         self,
     ) -> None:
