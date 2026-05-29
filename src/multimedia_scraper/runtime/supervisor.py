@@ -10,17 +10,25 @@ from multimedia_scraper.runtime.cancellation import (
     CancellationScope,
 )
 from multimedia_scraper.runtime.exceptions import (
-    SupervisorClosedError,
+    SupervisorClosedError, RuntimeCancellationError
 )
 from multimedia_scraper.runtime.task import RuntimeTask, create_runtime_task
 
 T = TypeVar("T")
 
+DEFAULT_SHUTDOWN_TIMEOUT_SECONDS = 5.0
 
 @dataclass(slots=True, kw_only=True)
 class TaskSupervisor:
     """
     Minimal structured concurrency supervisor.
+
+    Responsibilities:
+    - structured spawning
+    - task ownership
+    - cooperative cancellation propagation
+    - deterministic shutdown
+    - orphan prevention
     """
 
     name: str
@@ -28,6 +36,10 @@ class TaskSupervisor:
     cancellation_scope: CancellationScope
 
     parent: TaskSupervisor | None = None
+
+    shutdown_timeout_seconds: float = (
+        DEFAULT_SHUTDOWN_TIMEOUT_SECONDS
+    )
 
     _supervisor_id: UUID = field(
         default_factory=uuid4,
@@ -69,18 +81,29 @@ class TaskSupervisor:
 
         runtime_task = create_runtime_task(
             name=name,
-            coroutine=coroutine,
+            coroutine=self._run_structured(
+                coroutine=coroutine,
+            ),
         )
 
         self._children.add(runtime_task.task)
 
         runtime_task.task.add_done_callback(
-            lambda completed: self._children.discard(completed),
+            self._on_task_done,
         )
 
         return runtime_task
 
     async def shutdown(self) -> None:
+        """
+        Deterministic graceful supervisor shutdown.
+
+        Shutdown flow:
+        1. close spawning
+        2. propagate cooperative cancellation
+        3. await graceful completion
+        4. force asyncio cancellation if bounded wait expires
+        """
         if self._closed:
             return
 
@@ -93,7 +116,55 @@ class TaskSupervisor:
         if not children:
             return
 
-        await asyncio.gather(
-            *children,
-            return_exceptions=True,
-        )
+        try:
+            await asyncio.wait_for(
+                asyncio.gather(
+                    *children,
+                    return_exceptions=True,
+                ),
+                timeout=self.shutdown_timeout_seconds,
+            )
+
+        except TimeoutError:
+            for task in children:
+                task.cancel()
+
+    async def _run_structured(
+        self,
+        *,
+        coroutine: Coroutine[object, object, T],
+    ) -> T:
+        """
+        Structured execution wrapper.
+
+        Ensures:
+        - cooperative cancellation awareness
+        - scope-bound execution
+        - cancellation propagation consistency
+        """
+
+        if self.cancellation_scope.is_cancelled:
+            raise RuntimeCancellationError()
+
+        try:
+            return await coroutine
+
+        except asyncio.CancelledError as exc:
+            self.cancellation_scope.cancel()
+
+            raise RuntimeCancellationError() from exc
+        
+
+    def _on_task_done(
+        self,
+        completed: asyncio.Task[object],
+    ) -> None:
+        """
+        Deterministic ownership cleanup.
+
+        Prevents orphan tracking retention.
+        """
+
+        self._children.discard(completed)
+
+    

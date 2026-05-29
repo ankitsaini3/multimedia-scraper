@@ -185,3 +185,16 @@ def create_root_cancellation_scope() -> CancellationScope:
     return CancellationScope(
         name=ROOT_CANCELLATION_SCOPE_NAME,
     )
+
+async def cancel_after(
+    scope: CancellationScope,
+    timeout_seconds: float,
+) -> None:
+    try:
+        await asyncio.sleep(timeout_seconds)
+
+    except asyncio.CancelledError:
+        return
+
+    if not scope.is_cancelled:
+        scope.cancel()

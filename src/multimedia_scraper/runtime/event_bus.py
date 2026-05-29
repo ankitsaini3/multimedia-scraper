@@ -9,6 +9,9 @@ from typing import TypeVar, cast
 from multimedia_scraper.runtime.cancellation import (
     CancellationScope,
 )
+from multimedia_scraper.runtime.exceptions import (
+    SupervisorClosedError
+)
 from multimedia_scraper.runtime.events import RuntimeEvent
 from multimedia_scraper.runtime.supervisor import (
     TaskSupervisor,
@@ -33,7 +36,13 @@ _InternalHandler = Callable[
 @dataclass(slots=True, kw_only=True)
 class RuntimeEventBus:
     """
-    Minimal async in-memory runtime event bus.
+    Minimal supervised in-memory runtime event bus.
+
+    Guarantees:
+    - structured handler execution
+    - cancellation-aware dispatch
+    - deterministic publish semantics
+    - lifecycle-bound coordination
     """
 
     supervisor: TaskSupervisor
@@ -49,6 +58,16 @@ class RuntimeEventBus:
         repr=False,
     )
 
+    _closed: bool = field(
+        default=False,
+        init=False,
+        repr=False,
+    )
+
+    @property
+    def is_closed(self) -> bool:
+        return self._closed
+
     def subscribe(
         self,
         event_type: type[TEvent],
@@ -57,6 +76,10 @@ class RuntimeEventBus:
         """
         Registers a typed async subscriber.
         """
+        if self._closed:
+            raise RuntimeError(
+                "RuntimeEventBus is closed",
+            )
 
         erased_handler = cast(
             _InternalHandler,
@@ -72,6 +95,7 @@ class RuntimeEventBus:
         event_type: type[TEvent],
         handler: EventHandler[TEvent],
     ) -> None:
+        
         erased_handler = cast(
             _InternalHandler,
             handler,
@@ -89,8 +113,16 @@ class RuntimeEventBus:
         event: RuntimeEvent,
     ) -> None:
         """
-        Deterministic cancellation-safe event dispatch.
+        Deterministic structured event dispatch.
+
+        Guarantees:
+        - cancellation-aware execution
+        - supervised handler ownership
+        - deterministic handler snapshotting
+        - failure isolation
         """
+        if self._closed:
+            return
 
         self.cancellation_scope.raise_if_cancelled()
 
@@ -101,15 +133,80 @@ class RuntimeEventBus:
         if not handlers:
             return
 
-        tasks = tuple(
-            self.supervisor.spawn(
-                name=(f"event-handler:{event.event_type}"),
-                coroutine=handler(event),
+        runtime_tasks = tuple(
+            self._spawn_handler(
+                event=event,
+                handler=handler,
             )
             for handler in handlers
         )
 
         await asyncio.gather(
-            *(task.wait() for task in tasks),
+            *(task.wait() for task in runtime_tasks),
             return_exceptions=True,
         )
+
+    async def shutdown(self) -> None:
+        """
+        Deterministic event bus shutdown.
+
+        Event bus owns no independent workers,
+        queues, or detached execution.
+
+        Shutdown only prevents future publications
+        and subscriptions.
+        """
+
+        if self._closed:
+            return
+
+        self._closed = True
+
+        self._subscribers.clear()
+
+
+    def _spawn_handler(
+        self,
+        *,
+        event: RuntimeEvent,
+        handler: _InternalHandler,
+    ):
+        """
+        Spawn a supervised handler execution.
+
+        Ensures all handler execution remains
+        lifecycle-bound to the runtime supervisor.
+        """
+
+        try:
+            return self.supervisor.spawn(
+                name=(
+                    f"event-handler:"
+                    f"{event.event_type}"
+                ),
+                coroutine=self._run_handler(
+                    event=event,
+                    handler=handler,
+                ),
+            )
+
+        except SupervisorClosedError:
+            raise
+
+
+    async def _run_handler(
+        self,
+        *,
+        event: RuntimeEvent,
+        handler: _InternalHandler,
+    ) -> None:
+        """
+        Structured handler execution wrapper.
+
+        Failure isolation intentionally occurs
+        at gather(return_exceptions=True).
+        """
+
+        self.cancellation_scope.raise_if_cancelled()
+
+        await handler(event)
