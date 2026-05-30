@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import re
 
-from multimedia_scraper.plugins.contracts.plugin import RuntimePlugin
-from multimedia_scraper.plugins.dto.capability import PluginCapabilityDTO
 from multimedia_scraper.core.errors.plugins import (
     PluginValidationError,
 )
+from multimedia_scraper.plugins.contracts.plugin import RuntimePlugin
+from multimedia_scraper.plugins.dto.capability import PluginCapabilityDTO
 
 PLUGIN_ID_PATTERN = re.compile(r"^[a-z0-9._-]+$")
 CAPABILITY_PATTERN = re.compile(r"^[a-z0-9._-]+$")

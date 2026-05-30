@@ -4,14 +4,14 @@ import asyncio
 
 import pytest
 
+from multimedia_scraper.core.errors.supervision import (
+    SupervisorClosedError,
+)
 from multimedia_scraper.runtime.cancellation import (
     RuntimeCancellationError,
     create_root_cancellation_scope,
 )
 from multimedia_scraper.runtime.context import RuntimeContext
-from multimedia_scraper.runtime.exceptions import (
-    SupervisorClosedError,
-)
 from multimedia_scraper.runtime.supervisor import (
     TaskSupervisor,
 )

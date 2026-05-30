@@ -6,8 +6,8 @@ from typing import Final
 from uuid import UUID, uuid4
 
 from multimedia_scraper.core.errors.runtime import (
+    CancellationScopeClosedError,
     RuntimeCancellationError,
-    CancellationScopeClosedError
 )
 
 ROOT_CANCELLATION_SCOPE_NAME: Final[str] = "runtime-root"

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from multimedia_scraper.plugins.dto.manifest import (
-    PluginManifestDTO,
-)
 from multimedia_scraper.core.errors.plugins import (
     PluginCompatibilityError,
+)
+from multimedia_scraper.plugins.dto.manifest import (
+    PluginManifestDTO,
 )
 
 SUPPORTED_PLUGIN_API_VERSION = 1

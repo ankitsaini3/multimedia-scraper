@@ -3,6 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from types import MappingProxyType
 
+from multimedia_scraper.core.errors.plugins import (
+    DuplicatePluginError,
+    PluginRegistryFrozenError,
+    UnknownPluginError,
+)
 from multimedia_scraper.plugins.contracts.plugin import (
     RuntimePlugin,
 )
@@ -17,11 +22,6 @@ from multimedia_scraper.plugins.dto.registration import (
 )
 from multimedia_scraper.plugins.registry.capabilities import (
     CapabilityRegistry,
-)
-from multimedia_scraper.core.errors.plugins import (
-    DuplicatePluginError,
-    PluginRegistryFrozenError,
-    UnknownPluginError,
 )
 from multimedia_scraper.plugins.registry.snapshots import (
     create_registry_snapshot,

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from multimedia_scraper.core.errors.plugins import PluginTaskLeakError
 from multimedia_scraper.plugins.contracts.plugin import (
     RuntimePlugin,
 )
@@ -9,7 +10,6 @@ from multimedia_scraper.plugins.contracts.states import PluginLifecycleState
 from multimedia_scraper.plugins.runtime.context import (
     PluginRuntimeContext,
 )
-from multimedia_scraper.plugins.runtime.exceptions import PluginTaskLeakError
 from multimedia_scraper.plugins.runtime.tasks import (
     PluginTaskTracker,
 )

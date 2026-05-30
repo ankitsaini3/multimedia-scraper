@@ -1,34 +1,5 @@
 # Tooling & Development Environment
 
-## Purpose
-
-This project uses a strict, deterministic tooling pipeline to preserve:
-
-- architectural consistency
-- reproducible debugging
-- runtime stability
-- maintainable solo-developer workflow
-
-The tooling stack is intentionally strict.
-
-This is not accidental.
-
-Async multimedia systems become unstable quickly without strong automated governance.
-
----
-
-# Core Principles
-
-## Automation Over Memory
-
-Do not rely on:
-
-- manual discipline
-- tribal knowledge
-- remembering architecture rules
-
-All critical rules are enforced automatically via CI and local hooks.
-
 ## Cross-Platform Parity
 
 All workflows run identically on Linux, macOS, Windows, WSL, and GitHub Actions.
@@ -40,12 +11,12 @@ Shell-dependent commands (`make`, `&&`, `;`, `/bin/sh` vs `cmd.exe`) are explici
 # Python Version
 
 ```text
->= 3.10
+>= 3.11
 ```
 
 ## Why
 
-Python 3.10 provides:
+Python 3.11 provides:
 
 - mature async ecosystem support
 - stable typing support (`|` union syntax, `TypeGuard`)
@@ -90,8 +61,7 @@ This project does not enforce automatic git hooks. Validation is run explicitly 
 If you prefer local hook enforcement for faster feedback, run:
 ```bash
 uv run pre-commit install --install-hooks
-
----
+```
 
 # Task Orchestration
 
@@ -113,13 +83,18 @@ All tasks are defined in `[tool.poe.tasks]` within `pyproject.toml`.
 ### Core Commands
 
 ```bash
-uv run poe fmt        # Format code (ruff)
+uv run poe fmt-chk    # Check if files are correctly formatted without modifying them (fails if formatting is needed) 
+uv run poe fmt        # Auto-format all Python files with Ruff to enforce consistent code style
 uv run poe lint       # Lint + auto-fix safe issues
-uv run poe type       # Type check (mypy strict)
-uv run poe test       # Run tests (parallel via pytest-xdist)
+uv run poe lint       # Run Ruff linter in check-only mode to report all code quality issues
+uv run poe type       # Perform static type checking with mypy to catch type-related bugs
+uv run poe test       # Run the test suite in parallel across all available CPU cores for faster execution
 uv run poe check      # Full pre-commit validation (format-chk + lint-chk + type + test)
+uv run poe cov        # Run tests with code coverage and display missing/uncovered lines in the terminal
 uv run poe ci         # Full CI pipeline (clean + fmt + lint + type + cov)
 uv run poe clean      # Remove caches, build artifacts, coverage reports
+uv run poe arch       # Check architectural boundaries with ImportLinter (forbidden imports)
+uv run poe deps       # Check dependencies in source code only (avoids false positives from tests/scripts)
 ```
 
 ---
@@ -196,7 +171,7 @@ uv run poe test
 ## Import Linter
 
 ```bash
-uv run import-linter check
+uv run poe arch
 ```
 
 Purpose:
@@ -214,7 +189,7 @@ Contracts are defined in `[tool.importlinter.contracts]`.
 ## Deptry
 
 ```bash
-uv run deptry .
+uv run poe deps
 ```
 
 Purpose:

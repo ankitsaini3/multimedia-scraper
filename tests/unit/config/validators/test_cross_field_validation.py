@@ -1,10 +1,10 @@
 import pytest
 
-from multimedia_scraper.core.config.exceptions import (
-    ConfigurationValidationError,
-)
 from multimedia_scraper.core.config.validators.pipeline import (
     ValidationPipeline,
+)
+from multimedia_scraper.core.errors.configuration import (
+    ConfigurationValidationError,
 )
 
 

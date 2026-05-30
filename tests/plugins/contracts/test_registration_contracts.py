@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from multimedia_scraper.plugins.registry.exceptions import (
+from multimedia_scraper.core.errors.plugins import (
     DuplicatePluginError,
     PluginRegistryFrozenError,
 )

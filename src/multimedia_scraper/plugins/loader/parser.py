@@ -1,13 +1,13 @@
 from __future__ import annotations
 
+from multimedia_scraper.core.errors.plugins import (
+    InvalidPluginModuleError,
+)
 from multimedia_scraper.plugins.contracts.plugin import (
     RuntimePlugin,
 )
 from multimedia_scraper.plugins.dto.manifest import (
     PluginManifestDTO,
-)
-from multimedia_scraper.core.errors.plugins import (
-    InvalidPluginModuleError,
 )
 
 

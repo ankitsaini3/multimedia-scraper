@@ -55,7 +55,6 @@ class PluginContractViolationError(
     """
 
 
-
 class PluginShutdownError(
     PluginError,
 ):
@@ -66,7 +65,6 @@ class PluginTaskLeakError(
     PluginError,
 ):
     """Plugin leaked runtime-owned tasks."""
-
 
 
 class PluginDiscoveryError(

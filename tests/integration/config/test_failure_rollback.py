@@ -6,7 +6,7 @@ from multimedia_scraper.core.config.bootstrap.coordinator import (
 from multimedia_scraper.core.config.bootstrap.state import (
     ConfigBootstrapState,
 )
-from multimedia_scraper.core.config.exceptions import (
+from multimedia_scraper.core.errors.configuration import (
     ConfigurationValidationError,
 )
 

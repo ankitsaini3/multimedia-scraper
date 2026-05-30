@@ -3,7 +3,7 @@ from __future__ import annotations
 from multimedia_scraper.core.config.dto.secrets import (
     SecretStr,
 )
-from multimedia_scraper.core.config.exceptions import (
+from multimedia_scraper.core.errors.configuration import (
     ConfigurationValidationError,
 )
 

@@ -6,11 +6,11 @@ from collections.abc import Callable, Coroutine
 from dataclasses import dataclass, field
 from typing import TypeVar, cast
 
+from multimedia_scraper.core.errors.supervision import SupervisorClosedError
 from multimedia_scraper.runtime.cancellation import (
     CancellationScope,
 )
 from multimedia_scraper.runtime.events import RuntimeEvent
-from multimedia_scraper.core.errors.supervision import SupervisorClosedError
 from multimedia_scraper.runtime.supervisor import (
     TaskSupervisor,
 )

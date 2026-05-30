@@ -3,15 +3,15 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TypeVar, cast
 
+from multimedia_scraper.core.errors.plugins import (
+    DuplicateCapabilityProviderError,
+    UnknownCapabilityProviderError,
+)
 from multimedia_scraper.plugins.dto.capability_registration import (
     CapabilityRegistrationDTO,
 )
 from multimedia_scraper.plugins.dto.manifest import (
     PluginManifestDTO,
-)
-from multimedia_scraper.core.errors.plugins import (
-    DuplicateCapabilityProviderError,
-    UnknownCapabilityProviderError,
 )
 from multimedia_scraper.plugins.types import (
     CapabilityName,
