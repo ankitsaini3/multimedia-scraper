@@ -9,13 +9,12 @@ from typing import TypeVar, cast
 from multimedia_scraper.runtime.cancellation import (
     CancellationScope,
 )
-from multimedia_scraper.runtime.exceptions import (
-    SupervisorClosedError
-)
 from multimedia_scraper.runtime.events import RuntimeEvent
+from multimedia_scraper.runtime.exceptions import SupervisorClosedError
 from multimedia_scraper.runtime.supervisor import (
     TaskSupervisor,
 )
+from multimedia_scraper.runtime.task import RuntimeTask
 
 TEvent = TypeVar(
     "TEvent",
@@ -95,7 +94,7 @@ class RuntimeEventBus:
         event_type: type[TEvent],
         handler: EventHandler[TEvent],
     ) -> None:
-        
+
         erased_handler = cast(
             _InternalHandler,
             handler,
@@ -164,13 +163,12 @@ class RuntimeEventBus:
 
         self._subscribers.clear()
 
-
     def _spawn_handler(
         self,
         *,
         event: RuntimeEvent,
         handler: _InternalHandler,
-    ):
+    ) -> RuntimeTask[None]:
         """
         Spawn a supervised handler execution.
 
@@ -180,10 +178,7 @@ class RuntimeEventBus:
 
         try:
             return self.supervisor.spawn(
-                name=(
-                    f"event-handler:"
-                    f"{event.event_type}"
-                ),
+                name=(f"event-handler:{event.event_type}"),
                 coroutine=self._run_handler(
                     event=event,
                     handler=handler,
@@ -192,7 +187,6 @@ class RuntimeEventBus:
 
         except SupervisorClosedError:
             raise
-
 
     async def _run_handler(
         self,

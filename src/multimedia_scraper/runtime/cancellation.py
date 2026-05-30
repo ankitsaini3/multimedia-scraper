@@ -186,6 +186,7 @@ def create_root_cancellation_scope() -> CancellationScope:
         name=ROOT_CANCELLATION_SCOPE_NAME,
     )
 
+
 async def cancel_after(
     scope: CancellationScope,
     timeout_seconds: float,

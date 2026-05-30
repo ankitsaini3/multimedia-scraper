@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+from contextlib import suppress
 from dataclasses import dataclass, field
 from datetime import datetime
+from pathlib import Path
 from uuid import uuid4
 
 from multimedia_scraper.core.config.bootstrap.coordinator import (
@@ -13,10 +15,19 @@ from multimedia_scraper.core.observability.bootstrap.bootstrap_observability imp
 from multimedia_scraper.core.observability.bootstrap.startup_diagnostics import (
     StartupDiagnosticsRegistry,
 )
-from multimedia_scraper.runtime.cancellation import (
-    create_root_cancellation_scope, CancellationScope
+from multimedia_scraper.plugins.loader.loader import (
+    LocalPluginLoader,
 )
-from multimedia_scraper.runtime.context import RuntimeContext
+from multimedia_scraper.plugins.registry.registry import (
+    RuntimePluginRegistry,
+)
+from multimedia_scraper.runtime.cancellation import (
+    CancellationScope,
+    create_root_cancellation_scope,
+)
+from multimedia_scraper.runtime.context import (
+    RuntimeContext,
+)
 from multimedia_scraper.runtime.event_bus import (
     RuntimeEventBus,
 )
@@ -66,10 +77,14 @@ class RuntimeBootstrapCoordinator:
     )
 
     @property
-    def state(self) -> RuntimeLifecycleState:
+    def state(
+        self,
+    ) -> RuntimeLifecycleState:
         return self._state
 
-    async def bootstrap(self) -> RuntimeContext:
+    async def bootstrap(
+        self,
+    ) -> RuntimeContext:
         """
         Deterministic runtime startup ordering.
 
@@ -77,7 +92,10 @@ class RuntimeBootstrapCoordinator:
         1. configuration bootstrap
         2. observability initialization
         3. runtime primitive creation
-        4. runtime activation
+        4. plugin loading
+        5. plugin initialization
+        6. plugin activation
+        7. runtime activation
 
         Failure semantics:
         - no partial runtime activation
@@ -90,6 +108,7 @@ class RuntimeBootstrapCoordinator:
             )
 
         self._state = RuntimeLifecycleState.BOOTSTRAPPING
+
         observability_initialized = False
 
         try:
@@ -103,12 +122,12 @@ class RuntimeBootstrapCoordinator:
 
             supervisor = TaskSupervisor(
                 name="runtime-root",
-                cancellation_scope=cancellation_scope,
+                cancellation_scope=(cancellation_scope),
             )
 
             event_bus = RuntimeEventBus(
                 supervisor=supervisor,
-                cancellation_scope=cancellation_scope,
+                cancellation_scope=(cancellation_scope),
             )
 
             registry = RuntimeRegistry()
@@ -120,7 +139,7 @@ class RuntimeBootstrapCoordinator:
             metadata = RuntimeMetadata(
                 runtime_version="0.1.0",
                 created_at=self._utc_now(),
-                bootstrap_completed_at=self._utc_now(),
+                bootstrap_completed_at=(self._utc_now()),
             )
 
             context = RuntimeContext(
@@ -129,20 +148,38 @@ class RuntimeBootstrapCoordinator:
                 observability=self.observability,
                 diagnostics=self.diagnostics,
                 metadata=metadata,
-                cancellation_scope=cancellation_scope,
+                cancellation_scope=(cancellation_scope),
                 supervisor=supervisor,
                 event_bus=event_bus,
                 registry=registry,
             )
 
+            plugin_registry = RuntimePluginRegistry()
+
             self._register_runtime_components(
                 context=context,
+                plugin_registry=plugin_registry,
             )
+
+            plugin_loader = LocalPluginLoader(
+                plugin_registry=plugin_registry,
+                runtime_context=context,
+            )
+
+            plugin_loader.load_from_path(
+                Path("plugins"),
+            )
+
+            await plugin_registry.initialize_all()
+
+            await plugin_registry.activate_all()
+
+            plugin_registry.freeze()
 
             self._state = RuntimeLifecycleState.ACTIVE
 
             return context
-        
+
         except Exception:
             self._state = RuntimeLifecycleState.FAILED
 
@@ -160,9 +197,11 @@ class RuntimeBootstrapCoordinator:
 
         Ordering:
         1. runtime cancellation
-        2. supervisor drain
-        3. observability flush/shutdown
-        4. runtime termination
+        2. plugin shutdown
+        3. event bus shutdown
+        4. supervisor drain
+        5. observability shutdown
+        6. runtime termination
 
         Guarantees:
         - idempotent shutdown
@@ -181,8 +220,16 @@ class RuntimeBootstrapCoordinator:
         try:
             context.cancellation_scope.cancel()
 
+            plugin_registry = context.registry.resolve(
+                RuntimePluginRegistry,
+            )
+
+            await plugin_registry.shutdown_all()
+
             await context.event_bus.shutdown()
+
             await context.supervisor.shutdown()
+
         finally:
             await self._safe_shutdown_observability()
 
@@ -204,16 +251,14 @@ class RuntimeBootstrapCoordinator:
         observability teardown fails.
         """
 
-        try:
+        with suppress(Exception):
             await self.observability.shutdown()
-
-        except Exception:
-            pass
 
     def _register_runtime_components(
         self,
         *,
         context: RuntimeContext,
+        plugin_registry: RuntimePluginRegistry,
     ) -> None:
         """
         Explicit runtime ownership registration.
@@ -241,4 +286,9 @@ class RuntimeBootstrapCoordinator:
         context.registry.register(
             RuntimeEventBus,
             context.event_bus,
+        )
+
+        context.registry.register(
+            RuntimePluginRegistry,
+            plugin_registry,
         )

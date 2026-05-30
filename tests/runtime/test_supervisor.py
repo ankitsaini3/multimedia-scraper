@@ -8,14 +8,12 @@ from multimedia_scraper.runtime.cancellation import (
     RuntimeCancellationError,
     create_root_cancellation_scope,
 )
+from multimedia_scraper.runtime.context import RuntimeContext
 from multimedia_scraper.runtime.exceptions import (
     SupervisorClosedError,
 )
 from multimedia_scraper.runtime.supervisor import (
     TaskSupervisor,
-)
-from multimedia_scraper.runtime.context import (
-    RuntimeContext
 )
 
 pytestmark = pytest.mark.asyncio
@@ -127,7 +125,6 @@ async def test_supervisor_shutdown_is_idempotent() -> None:
     assert supervisor.is_closed is True
 
 
-
 async def test_supervisor_prevents_orphan_tasks() -> None:
     scope = create_root_cancellation_scope()
 
@@ -149,6 +146,7 @@ async def test_supervisor_prevents_orphan_tasks() -> None:
     await asyncio.sleep(0)
 
     assert supervisor._children == set()
+
 
 async def test_runtime_can_execute_supervised_work(
     fake_runtime_context: RuntimeContext,

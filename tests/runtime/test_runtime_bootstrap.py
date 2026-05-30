@@ -22,10 +22,7 @@ async def test_runtime_bootstrap_activates_runtime(
         RuntimeContext,
     )
 
-    assert (
-        runtime_bootstrap_coordinator.state
-        is RuntimeLifecycleState.ACTIVE
-    )
+    assert runtime_bootstrap_coordinator.state is RuntimeLifecycleState.ACTIVE
 
 
 async def test_runtime_shutdown_transitions_lifecycle(
@@ -37,10 +34,7 @@ async def test_runtime_shutdown_transitions_lifecycle(
         context,
     )
 
-    assert (
-        runtime_bootstrap_coordinator.state
-        is RuntimeLifecycleState.TERMINATED
-    )
+    assert runtime_bootstrap_coordinator.state is RuntimeLifecycleState.TERMINATED
 
 
 async def test_runtime_shutdown_is_idempotent(
@@ -56,10 +50,7 @@ async def test_runtime_shutdown_is_idempotent(
         context,
     )
 
-    assert (
-        runtime_bootstrap_coordinator.state
-        is RuntimeLifecycleState.TERMINATED
-    )
+    assert runtime_bootstrap_coordinator.state is RuntimeLifecycleState.TERMINATED
 
 
 async def test_runtime_registry_contains_primitives(

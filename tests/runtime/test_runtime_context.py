@@ -4,24 +4,8 @@ import asyncio
 
 import pytest
 
-from multimedia_scraper.runtime.cancellation import (
-    create_root_cancellation_scope,
-)
 from multimedia_scraper.runtime.context import (
     RuntimeContext,
-)
-from multimedia_scraper.runtime.event_bus import (
-    RuntimeEventBus,
-)
-from multimedia_scraper.runtime.metadata import (
-    RuntimeId,
-    RuntimeMetadata,
-)
-from multimedia_scraper.runtime.registry import (
-    RuntimeRegistry,
-)
-from multimedia_scraper.runtime.supervisor import (
-    TaskSupervisor,
 )
 
 pytestmark = pytest.mark.asyncio
@@ -76,7 +60,4 @@ async def test_child_supervisor_has_isolated_task_tracking(
 
     assert child._children == set()
 
-    assert (
-        fake_runtime_context.supervisor._children
-        == set()
-    )
+    assert fake_runtime_context.supervisor._children == set()

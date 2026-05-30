@@ -52,8 +52,14 @@ class RuntimeRegistry:
         """
         Explicit typed runtime lookup.
         """
+        value = self._registrations.get(
+            interface,
+        )
 
-        value = self._registrations[interface]
+        if value is None:
+            raise KeyError(
+                (f"Runtime interface not registered: {interface!r}"),
+            )
 
         return cast(T, value)  # pyright: ignore[reportReturnType]
 

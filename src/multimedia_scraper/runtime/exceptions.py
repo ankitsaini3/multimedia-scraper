@@ -18,3 +18,11 @@ class SupervisorClosedError(RuntimeError):
     """
     Raised when spawning tasks into a closed supervisor.
     """
+
+
+class DuplicateRuntimeRegistrationError(
+    RuntimeError,
+):
+    """
+    Raised when runtime registration already exists.
+    """

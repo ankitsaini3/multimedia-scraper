@@ -10,13 +10,15 @@ from multimedia_scraper.runtime.cancellation import (
     CancellationScope,
 )
 from multimedia_scraper.runtime.exceptions import (
-    SupervisorClosedError, RuntimeCancellationError
+    RuntimeCancellationError,
+    SupervisorClosedError,
 )
 from multimedia_scraper.runtime.task import RuntimeTask, create_runtime_task
 
 T = TypeVar("T")
 
 DEFAULT_SHUTDOWN_TIMEOUT_SECONDS = 5.0
+
 
 @dataclass(slots=True, kw_only=True)
 class TaskSupervisor:
@@ -37,9 +39,7 @@ class TaskSupervisor:
 
     parent: TaskSupervisor | None = None
 
-    shutdown_timeout_seconds: float = (
-        DEFAULT_SHUTDOWN_TIMEOUT_SECONDS
-    )
+    shutdown_timeout_seconds: float = DEFAULT_SHUTDOWN_TIMEOUT_SECONDS
 
     _supervisor_id: UUID = field(
         default_factory=uuid4,
@@ -153,7 +153,6 @@ class TaskSupervisor:
             self.cancellation_scope.cancel()
 
             raise RuntimeCancellationError() from exc
-        
 
     def _on_task_done(
         self,
@@ -166,5 +165,3 @@ class TaskSupervisor:
         """
 
         self._children.discard(completed)
-
-    

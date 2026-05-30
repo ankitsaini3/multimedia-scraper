@@ -5,7 +5,6 @@ import asyncio
 import pytest
 
 from multimedia_scraper.runtime.cancellation import (
-    CancellationScope,
     CancellationScopeClosedError,
     RuntimeCancellationError,
     cancel_after,

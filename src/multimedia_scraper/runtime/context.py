@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from collections.abc import Coroutine
+from dataclasses import dataclass
 from typing import TypeVar
 
 from multimedia_scraper.core.config.bootstrap.freeze import FrozenRuntimeConfig
@@ -11,9 +11,7 @@ from multimedia_scraper.core.observability.bootstrap.bootstrap_observability imp
 from multimedia_scraper.core.observability.bootstrap.startup_diagnostics import (
     StartupDiagnosticsRegistry,
 )
-from multimedia_scraper.runtime.cancellation import (
-    CancellationScope,
-)
+from multimedia_scraper.runtime.cancellation import CancellationScope, CancellationToken
 from multimedia_scraper.runtime.event_bus import (
     RuntimeEventBus,
 )
@@ -38,6 +36,7 @@ from multimedia_scraper.runtime.task import (
 )
 
 T = TypeVar("T")
+
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class RuntimeContext(
@@ -98,7 +97,7 @@ class RuntimeContext(
             name=name,
             coroutine=coroutine,
         )
-    
+
     def create_child_scope(
         self,
         *,
@@ -114,7 +113,7 @@ class RuntimeContext(
         return self.cancellation_scope.create_child(
             name=name,
         )
-    
+
     def create_child_supervisor(
         self,
         *,
@@ -138,9 +137,9 @@ class RuntimeContext(
             cancellation_scope=child_scope,
             parent=self.supervisor,
         )
-    
+
     @property
-    def cancellation_token(self):
+    def cancellation_token(self) -> CancellationToken:
         """
         Read-only cooperative cancellation surface.
         """
