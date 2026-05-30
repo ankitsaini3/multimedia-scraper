@@ -95,32 +95,84 @@ module = ["tests.*"]
 disallow_untyped_defs = false
 
 [tool.deptry]
-ignore_missing = ["importlib_metadata"]
-pep621_dev_dependency_groups = ["dev"]
+# Updated key (old key will be removed in next release)
+optional_dependencies_dev_groups = ["dev"]
+
+# Exclude non-source directories to reduce false positives
+exclude = ["tests", ".venv", "docs", "build", "dist", "_tasks.py"]
+
+known_first_party = ["multimedia_scraper"]
+
+# Ignore importlib_metadata for missing dependency checks (DEP001)
+[tool.deptry.per_rule_ignores]
+DEP001 = ["importlib_metadata"]
+DEP002 = [                       # Unused dependency false positives
+  "pydantic",
+  "pydantic-settings",
+  "structlog",
+  "typing-extensions",
+]
 
 [tool.importlinter]
-root_package = "multimedia_scraper"
+source_dirs = ["src"]
 
 # ─────────────────────────────────────────────────────────────
-# Scripts
+# Commands
 # ─────────────────────────────────────────────────────────────
-[tool.poe.tasks]
-fmt     = "ruff format ."
-fmt-chk = "ruff format --check ."
-lint    = "ruff check . --fix"
-lint-chk = "ruff check ."
-type    = "mypy src/multimedia_scraper"
-test    = "pytest -n auto --dist loadfile"
-cov     = "pytest --cov=multimedia_scraper --cov-report=term-missing"
-check   = ["fmt-chk", "lint-chk", "type", "test"]
-ci = ["clean", "fmt-chk", "lint-chk", "type", "cov"]
-clean.script = "_tasks:clean"
 
+[tool.poe.tasks.fmt]
+cmd = "ruff format ."
+help = "Auto-format all Python files with Ruff to enforce consistent code style"
+
+[tool.poe.tasks.fmt-chk]
+cmd = "ruff format --check ."
+help = "Check if files are correctly formatted without modifying them (fails if formatting is needed)"
+
+[tool.poe.tasks.lint]
+cmd = "ruff check . --fix"
+help = "Scan codebase with Ruff and automatically fix safe linting issues"
+
+[tool.poe.tasks.lint-chk]
+cmd = "ruff check ."
+help = "Run Ruff linter in check-only mode to report all code quality issues"
+
+[tool.poe.tasks.type]
+cmd = "mypy src/multimedia_scraper"
+help = "Perform static type checking with mypy to catch type-related bugs"
+
+[tool.poe.tasks.test]
+cmd = "pytest -n auto --dist loadfile"
+help = "Run the test suite in parallel across all available CPU cores for faster execution"
+
+[tool.poe.tasks.cov]
+cmd = "pytest --cov=multimedia_scraper --cov-report=term-missing"
+help = "Run tests with code coverage and display missing/uncovered lines in the terminal"
+
+[tool.poe.tasks.check]
+sequence = ["fmt-chk", "lint-chk", "type", "test"]
+help = "Run all local pre-commit checks sequentially (format, lint, type, tests)"
+
+[tool.poe.tasks.ci]
+sequence = ["clean", "fmt-chk", "lint-chk", "type", "cov"]
+help = "Full CI pipeline: clean artifacts, check formatting & linting, verify types, and generate coverage"
+
+[tool.poe.tasks.clean]
+script = "_tasks:clean"
+help = "Run custom Python script to remove caches, build artifacts, and temporary files"
+
+[tool.poe.tasks.arch]
+cmd = "lint-imports"
+help = "Check architectural boundaries with ImportLinter (forbidden imports)"
+
+[tool.poe.tasks.deps]
+cmd = "deptry src/"
+help = "Check dependencies in source code only (avoids false positives from tests/scripts)"
 
 
 # ─────────────────────────────────────────────────────────────
 # Architecture Contracts
 # ─────────────────────────────────────────────────────────────
+
 [[tool.importlinter.contracts]]
 name = "Core cannot import infrastructure"
 type = "forbidden"
