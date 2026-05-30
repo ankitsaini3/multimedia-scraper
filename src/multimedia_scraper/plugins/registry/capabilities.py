@@ -9,7 +9,7 @@ from multimedia_scraper.plugins.dto.capability_registration import (
 from multimedia_scraper.plugins.dto.manifest import (
     PluginManifestDTO,
 )
-from multimedia_scraper.plugins.registry.exceptions import (
+from multimedia_scraper.core.errors.plugins import (
     DuplicateCapabilityProviderError,
     UnknownCapabilityProviderError,
 )

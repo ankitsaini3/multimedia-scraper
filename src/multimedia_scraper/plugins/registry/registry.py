@@ -18,7 +18,7 @@ from multimedia_scraper.plugins.dto.registration import (
 from multimedia_scraper.plugins.registry.capabilities import (
     CapabilityRegistry,
 )
-from multimedia_scraper.plugins.registry.exceptions import (
+from multimedia_scraper.core.errors.plugins import (
     DuplicatePluginError,
     PluginRegistryFrozenError,
     UnknownPluginError,

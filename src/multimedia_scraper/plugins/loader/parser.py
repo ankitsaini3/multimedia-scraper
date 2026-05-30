@@ -6,7 +6,7 @@ from multimedia_scraper.plugins.contracts.plugin import (
 from multimedia_scraper.plugins.dto.manifest import (
     PluginManifestDTO,
 )
-from multimedia_scraper.plugins.loader.exceptions import (
+from multimedia_scraper.core.errors.plugins import (
     InvalidPluginModuleError,
 )
 

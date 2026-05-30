@@ -5,9 +5,9 @@ from dataclasses import dataclass, field
 from typing import Final
 from uuid import UUID, uuid4
 
-from multimedia_scraper.runtime.exceptions import (
-    CancellationScopeClosedError,
+from multimedia_scraper.core.errors.runtime import (
     RuntimeCancellationError,
+    CancellationScopeClosedError
 )
 
 ROOT_CANCELLATION_SCOPE_NAME: Final[str] = "runtime-root"

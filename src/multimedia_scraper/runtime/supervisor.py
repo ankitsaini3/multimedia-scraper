@@ -9,9 +9,11 @@ from uuid import UUID, uuid4
 from multimedia_scraper.runtime.cancellation import (
     CancellationScope,
 )
-from multimedia_scraper.runtime.exceptions import (
+from multimedia_scraper.core.errors.runtime import (
     RuntimeCancellationError,
-    SupervisorClosedError,
+)
+from multimedia_scraper.core.errors.supervision import (
+    SupervisorClosedError
 )
 from multimedia_scraper.runtime.task import RuntimeTask, create_runtime_task
 

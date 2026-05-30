@@ -10,7 +10,7 @@ from multimedia_scraper.runtime.cancellation import (
     CancellationScope,
 )
 from multimedia_scraper.runtime.events import RuntimeEvent
-from multimedia_scraper.runtime.exceptions import SupervisorClosedError
+from multimedia_scraper.core.errors.supervision import SupervisorClosedError
 from multimedia_scraper.runtime.supervisor import (
     TaskSupervisor,
 )

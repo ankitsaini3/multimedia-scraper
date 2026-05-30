@@ -3,7 +3,7 @@ from __future__ import annotations
 from multimedia_scraper.plugins.dto.manifest import (
     PluginManifestDTO,
 )
-from multimedia_scraper.plugins.loader.exceptions import (
+from multimedia_scraper.core.errors.plugins import (
     PluginCompatibilityError,
 )
 

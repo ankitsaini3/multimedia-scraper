@@ -53,3 +53,8 @@ class ChildTaskEscapeError(
     """
     Child task escaped parent lifecycle boundary.
     """
+
+class SupervisorClosedError(RuntimeError):
+    """
+    Raised when spawning tasks into a closed supervisor.
+    """

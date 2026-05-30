@@ -6,7 +6,7 @@ from typing import Any
 from multimedia_scraper.core.config.dto.runtime import (
     RuntimeConfigDTO,
 )
-from multimedia_scraper.core.config.exceptions import (
+from multimedia_scraper.core.errors.configuration import (
     ConfigurationValidationError,
 )
 

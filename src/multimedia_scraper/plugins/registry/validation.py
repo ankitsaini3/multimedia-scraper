@@ -4,7 +4,7 @@ import re
 
 from multimedia_scraper.plugins.contracts.plugin import RuntimePlugin
 from multimedia_scraper.plugins.dto.capability import PluginCapabilityDTO
-from multimedia_scraper.plugins.registry.exceptions import (
+from multimedia_scraper.core.errors.plugins import (
     PluginValidationError,
 )
 
