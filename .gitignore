@@ -33,3 +33,9 @@ Thumbs.db
 
 # Environment
 .env
+
+docs/llm
+docs/multimedia_scraper_architecture_bootstrap_docs.md
+docs/review_and_workflow.md
+
+.hypothesis
